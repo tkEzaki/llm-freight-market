@@ -34,6 +34,19 @@ data/k_sweep2/           # complete results of all reported runs:
                          #    ranking, and daily market state)
 ```
 
+### Naming of cells
+
+Filenames encode a cell as `<condition>-k<L>-s<run>`, e.g. `gpt-k20-s0` is
+GPT with twenty displayed candidates, run 0. The `k` in these tags is the
+exposure lever the paper calls `L` (the code predates the rename); the
+number after it is the number of candidates shown per load. Conditions are
+`gpt` / `claude` / `gemini` (LLM vendors), `gpt-truth` / `gpt-static`
+(trust-signal ablation; plain `gpt` is the endogenous rating), `showcap`
+(capacity disclosure), `noshuffle` (fixed list order), `popularity`
+(popularity display), `poly3` (vendor mix), `gpt-pr05` / `gpt-pr02`
+(slower price adjustment), and `random` / `pa` / `conflicting` / `greedy`
+(the four reference decision rules).
+
 ## Setup
 
 ```bash
