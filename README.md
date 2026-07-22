@@ -54,7 +54,7 @@ python -X utf8 experiments/run_k_sweep2.py v2
 # everything reported in the paper
 python -X utf8 experiments/run_k_sweep2.py
 
-# figures + stats digest (reads results/k_sweep2/)
+# figures + stats digest (results/ if present, else the shipped data/)
 python -X utf8 experiments/make_paper_figs.py
 ```
 
@@ -62,8 +62,34 @@ Outputs go to `results/k_sweep2/`: per-day market aggregates
 (`rounds_<cell>.csv`) and a decision-level audit trail
 (`trace_<cell>.jsonl`) containing every prompt, raw model response, parsed
 ranking, and end-of-day market state. Prompt-level response caching makes
-every cell exactly reproducible; runs abort rather than substitute random
-choices when an API fails.
+every cell exactly reproducible. Quota and billing failures abort the run
+immediately so that random fallbacks never contaminate the data; a
+transient API error is retried, and a run also aborts if more than 5% of
+its decisions ever fall back to a random choice (none did in the
+reported runs).
+
+## Provenance of the reported runs
+
+The reported experiments called the API model identifiers
+`gpt-5.4-mini` (OpenAI), `claude-haiku-4-5` (Anthropic), and
+`gemini-3.5-flash` (Google) between 15 and 18 July 2026, at temperature
+0.7 with a 256-token output limit, reasoning modes disabled, and three
+retries with exponential backoff. One cell (50 shippers × 30 days) makes
+1,500 calls and completes in about five minutes at 16-way concurrency;
+the capacity-disclosure condition runs sequentially within each day,
+because the disclosed remaining capacity depends on decisions taken
+earlier that day, and takes about 45 minutes per cell. Total API cost for
+all reported experiments was on the order of $200.
+
+A response counts as valid if it yields three distinct carrier
+identifiers drawn from the displayed pool (duplicates and non-candidates
+are dropped during parsing). Across the ~190,000 decisions reported in
+the paper, every response met this check, none returned fewer than three
+usable choices, and no decision fell back to a non-LLM rule.
+
+Because providers update hosted models, the cached prompt–response pairs
+under `data/` replay the recorded behavior exactly, while fresh API calls
+to the same identifiers may differ.
 
 ## Reproducing the paper's figures without API calls
 
