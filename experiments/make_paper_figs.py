@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Paper figures (Nature-style, 180 mm wide) + numeric digest for Results.
 
-Outputs to manuscript/tex/figs/: fig1_panels, fig2..fig5 (.pdf + .png)
-and stats_digest.txt with every number cited in the Results text.
+Writes fig1_panels, fig2..fig6, figA1, figA2 (.pdf + .png) and
+stats_digest.txt, which lists every number cited in the Results text,
+to figs/.
 
-Data: rq1/results/k_sweep2/ (5 seeds where available; partial arms are
-annotated in-figure). Run: python -X utf8 experiments/make_paper_figs.py
+Reads a fresh run from results/k_sweep2/ if present, otherwise the
+archived runs shipped in data/k_sweep2/ (gzipped traces are read
+transparently), so the figures reproduce without any API calls.
+
+Run: python -X utf8 experiments/make_paper_figs.py
 """
 import json
 from collections import Counter
@@ -593,7 +597,7 @@ def fig5():
     ax.set_ylabel("Shipper surplus")
     ax.legend(frameon=False, fontsize=5.5, loc="upper right",
               handletextpad=0.2)
-    ax.set_title("Concentration vs. welfare", fontsize=7)
+    ax.set_title("Concentration vs. shipper surplus", fontsize=7)
     save(fig, "fig5")
 
 
@@ -613,7 +617,7 @@ def figA1():
             ("kappa_pref_top3", r"Final $\kappa$", "Concentration"),
             ("service_rate", "Service rate", "Service")]):
         ax = fig.add_subplot(gs[0, idx])
-        panel(ax, "ab"[idx])
+        panel(ax, "ab"[idx], dy=1.14)
         for arm, color, label in rules:
             means, los, his = [], [], []
             for k in KS:
@@ -644,7 +648,7 @@ def figA2():
                ("hhi_round", "HHI of served loads", "Served-load HHI")]
     for idx, (col, ylabel, title) in enumerate(metrics):
         ax = fig.add_subplot(gs[0, idx])
-        panel(ax, "abc"[idx])
+        panel(ax, "abc"[idx], dy=1.14)
         for arm, color, label in [("gpt", C_GPT, "GPT"),
                                   ("random", C_GRAY, "Random")]:
             means, los, his = [], [], []
