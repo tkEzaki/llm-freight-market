@@ -20,8 +20,11 @@ class AnthropicBackend(LLMBackend):
         return cls(model=model or "claude-haiku-4-5", **kwargs)
 
     def _call(self, prompt: str) -> Dict[str, Any]:
+        import os
+
         import anthropic
-        client = anthropic.Anthropic()
+        client = anthropic.Anthropic(
+            api_key=os.environ.get(self.api_key_env) or None)
         resp = client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,

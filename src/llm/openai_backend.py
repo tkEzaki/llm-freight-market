@@ -22,9 +22,17 @@ class OpenAIBackend(LLMBackend):
         return cls(model=model or "gpt-5.4-mini", **kwargs)
 
     def _call(self, prompt: str) -> Dict[str, Any]:
+        import os
+
         from openai import OpenAI
 
-        client = OpenAI(base_url=self.base_url) if self.base_url else OpenAI()
+        # Pass the key for THIS backend explicitly. Subclasses that reuse the
+        # OpenAI SDK against another vendor's endpoint (e.g. xAI) therefore
+        # never send an OpenAI key to that vendor, and never overwrite
+        # OPENAI_API_KEY for the rest of the process.
+        api_key = os.environ.get(self.api_key_env) or None
+        client = (OpenAI(api_key=api_key, base_url=self.base_url)
+                  if self.base_url else OpenAI(api_key=api_key))
         # GPT-5-family models require max_completion_tokens instead of
         # max_tokens and accept reasoning_effort='none' for non-thinking
         # behavior (parity with the other vendors). If an older model or an

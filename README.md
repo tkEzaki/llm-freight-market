@@ -118,6 +118,30 @@ python -X utf8 experiments/make_paper_figs.py
 reproduces every figure and the numeric digest from the shipped data
 alone, with no API access.
 
+## API keys and data handling
+
+Keys are read from `.env` (git-ignored; copy `.env.example`) or from real
+environment variables, which take precedence. Two properties are enforced
+and covered by `tests/test_backend_key_isolation.py`:
+
+* **Each backend sends only its own key.** Every client is constructed with
+  the key named by that backend's `api_key_env`, so the xAI backend, which
+  reuses the OpenAI SDK against `https://api.x.ai/v1`, can never transmit
+  an OpenAI key to xAI, and never writes a key into `OPENAI_API_KEY` for
+  the rest of the process.
+* **Only this project's `.env` is read.** A `.env` in a parent directory is
+  deliberately ignored, so keys belonging to an unrelated project cannot be
+  picked up.
+
+Run the checks with `python -m pytest tests -q`.
+
+Note that traces store prompts and raw model responses verbatim. That is
+the point of the audit trail, and it is harmless here because the market is
+synthetic (abstract locations, generated loads, no personal or commercial
+data). If you point this code at real procurement data, treat
+`results/*.jsonl` as sensitive: it will then contain counterparty names,
+lanes, prices, and anything else placed in the prompt.
+
 ## License
 
 MIT — see `LICENSE`.

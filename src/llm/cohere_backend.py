@@ -20,9 +20,12 @@ class CohereBackend(LLMBackend):
         return cls(model=model or "command-r", **kwargs)
 
     def _call(self, prompt: str) -> Dict[str, Any]:
+        import os
+
         import cohere
 
-        client = cohere.ClientV2()
+        client = cohere.ClientV2(
+            api_key=os.environ.get(self.api_key_env) or None)
         resp = client.chat(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],

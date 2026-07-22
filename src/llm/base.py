@@ -9,15 +9,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # API keys can live in a .env file instead of real environment variables.
-# Search order: rq1/.env, then project root (gen_ai_logi/.env). Existing
-# environment variables always take precedence (load_dotenv default).
+# Only this project's .env is loaded. Existing environment
+# variables always take precedence (load_dotenv default).
 try:
     from dotenv import load_dotenv
 
-    _RQ1_ROOT = Path(__file__).resolve().parents[2]
+    _PROJECT_ROOT = Path(__file__).resolve().parents[2]
+    # Only this project's .env is read; a parent directory's .env is
+    # deliberately ignored so that keys from an unrelated project cannot
+    # leak into these experiments.
     # utf-8-sig: tolerate the BOM added by Windows Notepad / PowerShell
-    load_dotenv(_RQ1_ROOT / ".env", encoding="utf-8-sig")
-    load_dotenv(_RQ1_ROOT.parent / ".env", encoding="utf-8-sig")
+    load_dotenv(_PROJECT_ROOT / ".env", encoding="utf-8-sig")
 except ImportError:
     pass
 

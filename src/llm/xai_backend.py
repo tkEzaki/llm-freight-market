@@ -21,9 +21,5 @@ class XAIBackend(OpenAIBackend):
     def from_spec(cls, *, model: Optional[str], **kwargs) -> "XAIBackend":
         return cls(model=model or "grok-3-mini", **kwargs)
 
-    def _call(self, prompt):
-        # Reuse the OpenAI path but with our base_url + api_key from XAI_API_KEY.
-        # The OpenAI SDK reads OPENAI_API_KEY by default; we forward our key.
-        import os
-        os.environ.setdefault("OPENAI_API_KEY", os.environ.get(self.api_key_env, ""))
-        return super()._call(prompt)
+    # No _call override: OpenAIBackend reads the key from api_key_env,
+    # which is XAI_API_KEY here, and posts it to base_url.

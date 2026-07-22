@@ -1,8 +1,18 @@
-numpy
-pandas
-scipy
-matplotlib
-python-dotenv
+# Core: needed to run the reported experiments and rebuild every figure.
+numpy>=1.26
+pandas>=2.0
+scipy>=1.11
+matplotlib>=3.8
+python-dotenv>=1.0
 openai>=1.0
 anthropic>=0.30
 google-genai>=1.0
+
+# Optional backends, installed only if you use them:
+#   requests>=2.31     -> ollama_backend  (local models)
+#   mistralai>=1.0     -> mistral_backend
+#   cohere>=5.0        -> cohere_backend
+# The reported experiments use OpenAI, Anthropic, and Google only.
+
+# For the exact versions used in the reported runs see requirements-lock.txt.
+# Tests: pytest>=8.0

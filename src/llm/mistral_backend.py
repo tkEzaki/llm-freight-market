@@ -20,9 +20,11 @@ class MistralBackend(LLMBackend):
         return cls(model=model or "mistral-small-latest", **kwargs)
 
     def _call(self, prompt: str) -> Dict[str, Any]:
+        import os
+
         from mistralai import Mistral
 
-        client = Mistral()
+        client = Mistral(api_key=os.environ.get(self.api_key_env) or None)
         resp = client.chat.complete(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
